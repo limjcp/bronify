@@ -50,12 +50,12 @@ export default function RootLayout({
                   >
                     Leaderboard
                   </Link>
-                  <Link
+                  {/* <Link
                     href="/admin"
                     className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 transition-colors duration-200"
                   >
                     Admin
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </div>
@@ -70,12 +70,12 @@ export default function RootLayout({
               >
                 Leaderboard
               </Link>
-              <Link
+              {/* <Link
                 href="/admin"
                 className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 transition-colors duration-200"
               >
                 Admin
-              </Link>
+              </Link> */}
             </div>
           </div>
         </nav>

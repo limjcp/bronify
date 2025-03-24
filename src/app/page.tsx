@@ -186,7 +186,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-[url('/lebron50k.webp')] bg-cover bg-center bg-fixed bg-black/60 bg-blend-overlay text-white p-4 md:p-8">
       <header className="mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
           Bronify Leaderboard
