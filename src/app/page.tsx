@@ -7,6 +7,8 @@ import {
   SkipForward,
   Volume2,
   VolumeX,
+  Repeat,
+  Shuffle,
 } from "lucide-react";
 
 interface Song {
@@ -27,6 +29,9 @@ export default function Home() {
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
   const [playLogSent, setPlayLogSent] = useState(false);
+  const [isShuffled, setIsShuffled] = useState(false);
+  const [loopMode, setLoopMode] = useState<"none" | "all" | "one">("none");
+  const [shuffledQueue, setShuffledQueue] = useState<Song[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Fetch songs initially
@@ -185,8 +190,112 @@ export default function Home() {
     }
   };
 
+  // Shuffle the song queue
+  const shuffleSongs = () => {
+    if (!isShuffled) {
+      // Create a new shuffled array excluding the current song
+      const remainingSongs = songs.filter(
+        (song) => song.id !== currentSong?.id
+      );
+      for (let i = remainingSongs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [remainingSongs[i], remainingSongs[j]] = [
+          remainingSongs[j],
+          remainingSongs[i],
+        ];
+      }
+      // If there's a current song, add it to the beginning
+      const newQueue = currentSong
+        ? [currentSong, ...remainingSongs]
+        : remainingSongs;
+      setShuffledQueue(newQueue);
+    } else {
+      setShuffledQueue([]);
+    }
+    setIsShuffled(!isShuffled);
+  };
+
+  // Toggle loop mode
+  const toggleLoop = () => {
+    setLoopMode((current) => {
+      if (current === "none") return "all";
+      if (current === "all") return "one";
+      return "none";
+    });
+  };
+
+  // Get the current song list based on shuffle state
+  const currentQueue = isShuffled ? shuffledQueue : songs;
+
+  // Find current song index
+  const currentIndex = currentQueue.findIndex(
+    (song) => song.id === currentSong?.id
+  );
+
+  // Navigation functions
+  const playNext = () => {
+    if (currentQueue.length === 0) return;
+
+    if (loopMode === "one") {
+      // Restart the current song
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+      }
+      return;
+    }
+
+    let nextIndex = currentIndex + 1;
+    if (nextIndex >= currentQueue.length) {
+      nextIndex = loopMode === "all" ? 0 : -1;
+    }
+
+    if (nextIndex !== -1) {
+      handlePlay(currentQueue[nextIndex]);
+    }
+  };
+
+  const playPrevious = () => {
+    if (currentQueue.length === 0) return;
+
+    // If we're more than 3 seconds into the song, restart it
+    if (currentTime > 3) {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        return;
+      }
+    }
+
+    let prevIndex = currentIndex - 1;
+    if (prevIndex < 0) {
+      prevIndex = loopMode === "all" ? currentQueue.length - 1 : -1;
+    }
+
+    if (prevIndex !== -1) {
+      handlePlay(currentQueue[prevIndex]);
+    }
+  };
+
+  // Update ended handler to handle auto-play and looping
+  useEffect(() => {
+    if (audioRef.current) {
+      const audio = audioRef.current;
+
+      const endedHandler = () => {
+        setIsPlaying(false);
+        setCurrentTime(0);
+        playNext();
+      };
+
+      audio.addEventListener("ended", endedHandler);
+      return () => {
+        audio.removeEventListener("ended", endedHandler);
+      };
+    }
+  }, [currentQueue, currentIndex, loopMode]); // Add dependencies
+
   return (
-    <div className="min-h-screen bg-[url('/lebron50k.webp')] bg-cover bg-center bg-fixed bg-black/60 bg-blend-overlay text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4 md:p-8">
       <header className="mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
           Bronify Leaderboard
@@ -230,7 +339,10 @@ export default function Home() {
 
               <div className="flex-grow flex flex-col w-full">
                 <div className="flex items-center justify-center gap-4">
-                  <button className="text-gray-400 hover:text-white">
+                  <button
+                    onClick={playPrevious}
+                    className="text-gray-400 hover:text-white"
+                  >
                     <SkipBack size={20} />
                   </button>
                   <button
@@ -243,7 +355,10 @@ export default function Home() {
                       <Play size={20} className="ml-1" />
                     )}
                   </button>
-                  <button className="text-gray-400 hover:text-white">
+                  <button
+                    onClick={playNext}
+                    className="text-gray-400 hover:text-white"
+                  >
                     <SkipForward size={20} />
                   </button>
                 </div>
@@ -267,6 +382,27 @@ export default function Home() {
               </div>
 
               <div className="flex items-center gap-2 ml-auto">
+                <button
+                  onClick={shuffleSongs}
+                  className={`text-gray-400 hover:text-white ${
+                    isShuffled ? "text-pink-500" : ""
+                  }`}
+                  title="Shuffle"
+                >
+                  <Shuffle size={18} />
+                </button>
+                <button
+                  onClick={toggleLoop}
+                  className={`text-gray-400 hover:text-white ${
+                    loopMode !== "none" ? "text-pink-500" : ""
+                  }`}
+                  title={`Loop mode: ${loopMode}`}
+                >
+                  <Repeat size={18} />
+                  {loopMode === "one" && (
+                    <span className="absolute text-[10px] font-bold">1</span>
+                  )}
+                </button>
                 <button
                   onClick={toggleMute}
                   className="text-gray-400 hover:text-white"
