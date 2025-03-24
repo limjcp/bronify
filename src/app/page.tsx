@@ -192,7 +192,7 @@ export default function Home() {
           Bronify Leaderboard
         </h1>
         <p className="text-center text-gray-400 mt-2">
-          By: odinioo, Limbron, & Snoopx on YT
+          By: Klawjo, Limbron, & Snoopx on YT
         </p>
       </header>
 
