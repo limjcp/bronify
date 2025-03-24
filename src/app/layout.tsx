@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bronify - Modern Music Player",
-  description: "Upload, play, and track your music with Bronify",
+  title: "Bronify - LBJ Songs",
+  description: "Songs for Glorious King LeBron James",
 };
 
 export default function RootLayout({
