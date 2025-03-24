@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
+import ChatBox from "@/components/ChatBox";
+import MobileChatToggle from "@/components/MobileChatToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bronify - LBJ Songs",
-  description: "Songs for Glorious King LeBron James",
+  title: "Bronify - Modern Music Player",
+  description: "Upload, play, and track your music with Bronify",
 };
 
 export default function RootLayout({
@@ -48,18 +50,18 @@ export default function RootLayout({
                   >
                     Leaderboard
                   </Link>
-                  {/* <Link
+                  <Link
                     href="/admin"
                     className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 transition-colors duration-200"
                   >
                     Admin
-                  </Link> */}
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Mobile menu, show/hide based on menu state. */}
+          {/* Mobile menu */}
           <div className="md:hidden border-t border-gray-700">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex justify-center">
               <Link
@@ -68,17 +70,28 @@ export default function RootLayout({
               >
                 Leaderboard
               </Link>
-              {/* <Link
+              <Link
                 href="/admin"
                 className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 transition-colors duration-200"
               >
                 Admin
-              </Link> */}
+              </Link>
             </div>
           </div>
         </nav>
 
-        <div className="pt-16">{children}</div>
+        <div className="pt-16 flex min-h-screen">
+          {/* Main content */}
+          <main className="flex-1 relative">{children}</main>
+
+          {/* Chat sidebar */}
+          <aside className="hidden lg:block w-96 p-4 fixed right-0 top-16 bottom-0 overflow-y-auto">
+            <ChatBox />
+          </aside>
+
+          {/* Mobile chat toggle and drawer */}
+          <MobileChatToggle />
+        </div>
       </body>
     </html>
   );
